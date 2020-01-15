@@ -57,7 +57,7 @@
             <div class="container bg-dark border rounded shadow"> 
                 <br>
                 <div class="input-group">
-                    <input type="number" placeholder="1 SOV minimum" min="0" class="form-control" aria-label="Number input with dropdown button" id="sovresourcesInput">
+                    <input type="number" placeholder="1 SOV minimum" min="0" class="form-control" aria-label="Number input with dropdown button" id="sovresourcesInput" oninput="this.value = Math.abs(this.value)">
                 <div class="input-group-prepend">
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Resources</button>                
                         <div class="dropdown-menu">
@@ -115,11 +115,11 @@
 
                 <div class="row row-cols-2">
                     <div class="col text-center">
-                        <input class="text-center form-control mb-1" type='number' min="0" id='svx_to_stake'>
+                        <input class="text-center form-control mb-1" type='number' min="0" id='svx_to_stake' oninput="this.value = Math.abs(this.value)">
                         <button class="btn btn-primary btn-lg btn-block shadow" id='stakebutton' onclick='svx_to_stake_action()'> Stake </button>
                     </div>
                     <div class="col text-center">
-                        <input class="text-center form-control mb-1" type='number' min="0" id='svx_to_unstake'>
+                        <input class="text-center form-control mb-1" type='number' min="0" id='svx_to_unstake' oninput="this.value = Math.abs(this.value)">
                         <button class="btn btn-primary btn-lg btn-block shadow" id='stakebutton' onclick='svx_to_unstake_action()'>Unstake</button> 
                     </div>
                 </div>
@@ -305,7 +305,7 @@
         <small>Mining transfers per transaction</small>
         </div>
       
-        <div class='d-flex'>SOV transfer amount:<input type='number' min="0" class='text-center form-control m-2' id='sov_burn_amount' value='210'></div>
+        <div class='d-flex'>SOV transfer amount:<input type='number' min="0" class='text-center form-control m-2' id='sov_burn_amount' value='210' oninput="this.value = Math.abs(this.value)"></div>
 
         <h6 id='svxMiningMultiplier' class="text-center">...</h6>
 
@@ -2843,7 +2843,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='eos_transfer_amount'  value= '1' step=".01">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='eos_transfer_amount'  value= '1' step=".01" oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVEOS()'>SendEOS<br>Buy SOV/EOS</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysoveosBancorDiv">...</small>
@@ -2853,7 +2853,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount' value='420'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount' value='420' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVEOS()'>SendSOV<br>Sell SOV/EOS</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsoveosBancorDiv">...</small>
@@ -2894,7 +2894,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='dapp_transfer_amount'  value= '100'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='dapp_transfer_amount' value= '100' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVDAPP()'>SendDAPP<br>Buy SOV/DAPP</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysovdappBancorDiv">...</small>
@@ -2904,7 +2904,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount1' value='420'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount1' value='420' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVDAPP()'>SendSOV<br>Sell SOV/DAPP</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovdappBancorDiv">...</small>
@@ -2929,7 +2929,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='tpt_transfer_amount'  value= '1000'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='tpt_transfer_amount' value= '1000' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVTPT()'>SendTPT<br>Buy SOV/TPT</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysovtptBancorDiv">...</small>
@@ -2939,7 +2939,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount2' value='420'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount2' value='420' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVTPT()'>SendSOV<br>Sell SOV/TPT</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovtptBancorDiv">...</small>
@@ -2964,7 +2964,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='ndx_transfer_amount'  value= '2000'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='ndx_transfer_amount'  value= '2000' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVNDX()'>SendNDX<br>Buy SOV/NDX</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysovndxBancorDiv">...</small>
@@ -2974,7 +2974,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount3' value='420'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount3' value='420' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVNDX()'>SendSOV<br>Sell SOV/NDX</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovndxBancorDiv">...</small>
@@ -2999,7 +2999,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='peos_transfer_amount'  value= '150'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='peos_transfer_amount'  value= '150' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVPEOS()'>SendPEOS<br>Buy SOV/PEOS</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysovpeosBancorDiv">...</small>
@@ -3009,7 +3009,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount4' value='420'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount4' value='420' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVPEOS()'>SendSOV<br>Sell SOV/PEOS</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovpeosBancorDiv">...</small>
@@ -3034,7 +3034,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='pgl_transfer_amount'  value= '50'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='pgl_transfer_amount'  value= '50' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVPGL()'>SendPGL<br>Buy SOV/PGL</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysovpglBancorDiv">...</small>
@@ -3044,7 +3044,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount5' value='420'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount5' value='420' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVPGL()'>SendSOV<br>Sell SOV/PGL</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovpglBancorDiv">...</small>
@@ -3069,7 +3069,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='dice_transfer_amount'  value= '1000'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='dice_transfer_amount'  value= '1000' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVDICE()'>SendDICE<br>Buy SOV/DICE</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysovdiceBancorDiv">...</small>
@@ -3079,7 +3079,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount6' value='420'>
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount6' value='420' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVDICE()'>SendSOV<br>Sell SOV/DICE</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovdiceBancorDiv">...</small>
