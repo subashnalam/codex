@@ -57,7 +57,7 @@
             <div class="container bg-dark border rounded shadow"> 
                 <br>
                 <div class="input-group">
-                    <input type="number" placeholder="1 SOV minimum" class="form-control" aria-label="Number input with dropdown button" id="svxresourcesInput">
+                    <input type="number" placeholder="1 SOV minimum" class="form-control" aria-label="Number input with dropdown button" id="sovresourcesInput">
                 <div class="input-group-prepend">
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Resources</button>                
                         <div class="dropdown-menu">
@@ -1985,7 +1985,7 @@
 
                      function rentCPUSOV() {
 
-                        var transfer_amount = document.getElementById('svxresourcesInput').value;
+                        var transfer_amount = document.getElementById('sovresourcesInput').value;
                         alert("Send " + transfer_amount + " SOV to Rent CPU");
                         transfer_amount = format_eos_amount(transfer_amount);
                         transfer_amount = transfer_amount + " SOV";
@@ -2002,7 +2002,7 @@
                              
                                 data: {
                                     "from": scatter_account,
-                                    "to": 'svxresources',
+                                    "to": 'sovresources',
                                     "quantity": transfer_amount,
                                     "memo": 'Rent CPU'
                                 }
@@ -2032,7 +2032,7 @@
 
                     function rentNETSOV() {
 
-                        var transfer_amount = document.getElementById('svxresourcesInput').value;
+                        var transfer_amount = document.getElementById('sovresourcesInput').value;
                         alert("Send " + transfer_amount + " SOV to Rent NET");
                         transfer_amount = format_eos_amount(transfer_amount);
                         transfer_amount = transfer_amount + " SOV";
@@ -2049,7 +2049,7 @@
                              
                                 data: {
                                     "from": scatter_account,
-                                    "to": 'svxresources',
+                                    "to": 'sovresources',
                                     "quantity": transfer_amount,
                                     "memo": 'Rent NET'
                                 }
@@ -2079,7 +2079,7 @@
 
                     function buyRAMSOV() {
 
-                        var transfer_amount = document.getElementById('svxresourcesInput').value;
+                        var transfer_amount = document.getElementById('sovresourcesInput').value;
                         alert("Send " + transfer_amount + " SOV to Buy RAM");
                         transfer_amount = format_eos_amount(transfer_amount);
                         transfer_amount = transfer_amount + " SOV";
@@ -2096,7 +2096,7 @@
                              
                                 data: {
                                     "from": scatter_account,
-                                    "to": 'svxresources',
+                                    "to": 'sovresources',
                                     "quantity": transfer_amount,
                                     "memo": 'Buy RAM'
                                 }
