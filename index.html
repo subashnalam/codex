@@ -723,6 +723,10 @@
                                     document.getElementById('SOVDICEBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
+                                if (document.getElementById('SOVPOWBALANCE')) {
+                                    document.getElementById('SOVPOWBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                }
+
 
                             } catch (err) {
 
@@ -898,6 +902,35 @@
                                 //document.getElementById('balance').innerHTML = "Your Balance: <span class='bold'>" + last + "</span>";
                                 if (document.getElementById('DICEBALANCE')) {
                                     document.getElementById('DICEBALANCE').innerHTML = "<span class='bold'>" + last + " DICE</span>";
+                                }
+
+
+                            } catch (err) {
+
+
+                            }
+
+
+                        });
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "eosiopowcoin",
+                            "scope": scatter_account,
+                            "table": "accounts"
+                        }).then(function(value) {
+
+                            var wert = value.rows.length;
+
+                            try {
+                                var last = value.rows[0].balance;
+                                last = last.replace("POW", "");
+
+                                balance_token = last * 10000;
+
+                                //document.getElementById('balance').innerHTML = "Your Balance: <span class='bold'>" + last + "</span>";
+                                if (document.getElementById('POWBALANCE')) {
+                                    document.getElementById('POWBALANCE').innerHTML = "<span class='bold'>" + last + " POW</span>";
                                 }
 
 
@@ -1157,6 +1190,43 @@
                          });
 
 
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "sovdexrelays",
+                            "scope": "POW",
+                            "table": "pair"
+                        }).then(function(value) {
+      
+                            var sovpowPrice = value.rows[0].price;
+                            const sovpowCW = value.rows[0].cw;
+                            var sovpowBalance = value.rows[0].connectorbal;
+                            var sovpowOutstanding = value.rows[0].outstandingbal;
+                            var powTransferAmount = document.getElementById('pow_transfer_amount').value;
+                            var sovTransferAmount = document.getElementById('sov_transfer_amount7').value;
+                            sovpowBalance = parseInt(sovpowBalance);
+                            sovpowOutstanding = parseInt(sovpowOutstanding);
+                            powTransferAmount = parseFloat(powTransferAmount);
+                            sovTransferAmount = parseFloat(sovTransferAmount);
+                            sovpowPrice = parseFloat(sovpowPrice).toFixed(8);   
+
+
+                            var buysovpowBancor = (-sovpowOutstanding*(Math.pow((1-(powTransferAmount /(sovpowBalance + powTransferAmount))), (sovpowCW/100))-1)).toFixed(4);
+
+
+    
+                            var sellsovpowBancor = (-sovpowBalance*(Math.pow(((1-(sovTransferAmount / (sovpowOutstanding + sovTransferAmount)))), (1/(sovpowCW/100)))-1)).toFixed(4);
+            
+                            SOVPOWPRICE.innerText = ("SOV Price = " + sovpowPrice + " POW");
+
+
+
+                            buysovpowBancorDiv.textContent = (buysovpowBancor);
+                            sellsovpowBancorDiv.textContent = (sellsovpowBancor);
+                         });
+
+
+
                         /*
                           svx_supply = value.rows[0].supply;
 
@@ -1325,6 +1395,8 @@
                                     document.getElementById('svxDiscount5').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
                                     document.getElementById('svxDiscount6').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
+
+                                    document.getElementById('svxDiscount7').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
 
                                 }
@@ -1543,6 +1615,38 @@
 
 
 
+
+
+
+
+                                    var sellsovpowMultiplierStart = document.getElementById('sov_transfer_amount7').value;
+                                   
+                                    sellsovpowMultiplierStart = format_eos_amount(sellsovpowMultiplierStart);
+
+                                    sellsovpowMultiplier = Math.log10((sellsovpowMultiplierStart / 200) / .21);
+                                    
+                                    var sellsovpowMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovpowMultiplier;
+
+                                    if (sellsovpowMiningRate < (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100))) sellsovpowMiningRate = 0;
+
+                                    sellsovpowMiningRate = parseFloat(sellsovpowMiningRate).toFixed(4);
+
+
+
+
+                                    var buysovpowMultiplierStart = document.getElementById('buysovpowBancorDiv').textContent;
+
+                                    buysovpowMultiplierStart = format_eos_amount(buysovpowMultiplierStart)*1E4;
+
+                                    buysovpowMultiplier = Math.log10(((buysovpowMultiplierStart/ 1e4) / 200) / .21);
+                                    if (buysovpowMultiplier < 1) buysovpowMultiplier = 0;
+                                    
+
+                                    var buysovpowMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysovpowMultiplier;
+                                    buysovpowMiningRate = parseFloat(buysovpowMiningRate).toFixed(4);
+
+
+
                                     var sovBurnAmount = document.getElementById('sov_burn_amount').value / 100;
 
                                     document.getElementById('svxMiningRate').innerHTML = "<span class='bold' style='font-size:14px;'>Mining Reward per Transfer: <span style='color:#00bb00'>" + mining_rate + "</span> SVX</span>";
@@ -1575,8 +1679,13 @@
 
                                     document.getElementById('buysovdiceMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovdiceMiningRate + "</span>  SVX</span>";
 
+                                    document.getElementById('sellsovpowMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovpowMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('buysovpowMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovpowMiningRate + "</span>  SVX</span>";
+
 
                                     document.getElementById('svxMiningMultiplier').innerHTML = "<span class='bold' style='font-size:14px;'>Mining Multiplier per Transfer: " + mining_multiplier + "</span>";
+
                                     document.getElementById('svxMiningBurn').innerHTML = "<span class='bold' style='font-size:14px;'>SOV Burn per Mining Transfer: " + sovBurnAmount + "</span>";
 
 
@@ -1720,6 +1829,33 @@
 
                     }
                     // format_eos_amount
+
+
+                        function format_pow_amount(amount) {
+
+                        betamount = amount + "";
+
+                        var n = betamount.indexOf(".");
+
+                        if (n == -1) {
+                            betamount = betamount + ".00000000";
+
+                            n = betamount.indexOf(".");
+                        }
+
+                        var l = betamount.length;
+                        diff = l - n - 1;
+
+                        amount2 = betamount;
+                        for (i = diff; i < 8; i++)
+                            amount2 += '0';
+
+                        amount2 = parseFloat(amount2).toFixed(8);
+
+                        return (amount2);
+
+                    }
+                    // format_pow_amount
 
 
                     // SCATTER BEGIN ------------------------
@@ -2826,6 +2962,106 @@
                     }
 
 
+                    function buySOVPOW() {
+
+                        var transfer_amount = document.getElementById('pow_transfer_amount').value;
+                        alert("Exchange " + transfer_amount + " POW for SOV");
+                        transfer_amount = format_pow_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " POW";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'eosiopowcoin',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                             
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'SOV',
+                                }
+
+                            }]
+                        }).then(result => {
+                            
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+
+                    }
+
+
+
+                    function sellSOVPOW() {
+                        
+                        var transfer_amount = document.getElementById('sov_transfer_amount7').value;
+                        alert("Exchange " + transfer_amount + " SOV for POW");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " SOV";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'sovmintofeos',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                                //     data: {"from":scatter_account,"to":receiver_account,"quantity":betamount,"memo":memo}
+                                //      data: {"param": "createbet;;BIRD vs turtle;This is a description;Bird;bird;Turtle;turtle;43;123"}
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'POW',
+                                }
+
+                            }]
+                        }).then(result => {
+                            // If Success
+
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+                            // Error details
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            //  nalert('<br><div class=\'checkmark_red\'></div>Error '+err.error.name+ '!<br><br>','white');
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+                    }
+
+
 
 
 
@@ -2881,6 +3117,7 @@
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-PEOS" role="tab" aria-controls="nav-PEOS" aria-selected="false">PEOS</a>
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-PGL" role="tab" aria-controls="nav-PGL" aria-selected="false">PGL</a>
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-DICE" role="tab" aria-controls="nav-DICE" aria-selected="false">DICE</a>
+    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-POW" role="tab" aria-controls="nav-POW" aria-selected="false">POW</a>
   </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
@@ -3092,6 +3329,44 @@
 
         <div>
             <p id="SOVDICEPRICE" class="d-flex justify-content-center text-light">...</p>
+        </div>
+
+  </div>
+
+
+  <div class="tab-pane fade" id="nav-POW" role="tabpanel" aria-labelledby="nav-POW-tab">
+    <h6 id='svxDiscount7' class="text-center text-warning">...</h6>
+            <h6 class="text-center text-white">SOV/POW Trading Balance</h6>
+            <row class="d-flex justify-content-around">
+                <small id="POWBALANCE" class="col text-center text-light">...</small>
+                <small id= "SOVPOWBALANCE" class="col text-light text-center">...</small>
+            </row>  
+
+            <div class="row row-cols-2">
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' id='pow_transfer_amount' step=".1"  value='1' min="0">
+                    <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVPOW()'>SendPOW<br>Buy SOV/POW</button>
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="buysovpowBancorDiv">...</small>
+                    <small class="text-center text-white">SOV before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="buysovpowMiningRateDiv">...</small>
+                </div>
+
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0.0001" id='sov_transfer_amount7' value='420' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVPOW()'>SendSOV<br>Sell SOV/POW</button> 
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="sellsovpowBancorDiv">...</small>
+                    <small class="text-center text-white">POW before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="sellsovpowMiningRateDiv">...</small>
+                </div>
+            </div>
+            <br>
+
+        <div>
+            <p id="SOVPOWPRICE" class="d-flex justify-content-center text-light">...</p>
         </div>
 
   </div>
