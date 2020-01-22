@@ -699,24 +699,28 @@
                                     document.getElementById('SOVBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
-                                 if (document.getElementById('SOVDAPPBALANCE')) {
-                                    document.getElementById('SOVDAPPBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                if (document.getElementById('SOVYASBALANCE')) {
+                                    document.getElementById('SOVYASBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
-                                 if (document.getElementById('SOVTPTBALANCE')) {
-                                    document.getElementById('SOVTPTBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                if (document.getElementById('SOVDAPPBALANCE')) {
+                                     document.getElementById('SOVDAPPBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
-                                 if (document.getElementById('SOVNDXBALANCE')) {
-                                    document.getElementById('SOVNDXBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                if (document.getElementById('SOVTPTBALANCE')) {
+                                     document.getElementById('SOVTPTBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
-                                 if (document.getElementById('SOVPEOSBALANCE')) {
-                                    document.getElementById('SOVPEOSBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                if (document.getElementById('SOVNDXBALANCE')) {
+                                     document.getElementById('SOVNDXBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
-                                 if (document.getElementById('SOVPGLBALANCE')) {
-                                    document.getElementById('SOVPGLBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                if (document.getElementById('SOVPEOSBALANCE')) {
+                                     document.getElementById('SOVPEOSBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                }
+
+                                if (document.getElementById('SOVPGLBALANCE')) {
+                                     document.getElementById('SOVPGLBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
                                 if (document.getElementById('SOVDICEBALANCE')) {
@@ -725,6 +729,36 @@
 
                                 if (document.getElementById('SOVPOWBALANCE')) {
                                     document.getElementById('SOVPOWBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                }
+
+
+                            } catch (err) {
+
+
+                            }
+
+
+                        });
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "yastokencode",
+                            "scope": scatter_account,
+                            "table": "accounts"
+                        }).then(function(value) {
+
+                            var wert = value.rows.length;
+
+                            try {
+                                var last = value.rows[0].balance;
+                                last = last.replace("YAS", "");
+
+                                balance_token = last * 10000;
+
+                                //document.getElementById('balance').innerHTML = "Your Balance: <span class='bold'>" + last + "</span>";
+                                if (document.getElementById('YASBALANCE')) {
+                                    document.getElementById('YASBALANCE').innerHTML = "<span class='bold'>" + last + " YAS</span>";
                                 }
 
 
@@ -975,6 +1009,41 @@
 
                             buysoveosBancorDiv.textContent = (buysoveosBancor);
                             sellsoveosBancorDiv.textContent = (sellsoveosBancor);
+                         });
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "sovdexrelays",
+                            "scope": "YAS",
+                            "table": "pair"
+                        }).then(function(value) {
+      
+                            var sovyasPrice = value.rows[0].price;
+                            const sovyasCW = value.rows[0].cw;
+                            var sovyasBalance = value.rows[0].connectorbal;
+                            var sovyasOutstanding = value.rows[0].outstandingbal;
+                            var yasTransferAmount = document.getElementById('yas_transfer_amount').value;
+                            var sovTransferAmount = document.getElementById('sov_transfer_amount0').value;
+                            sovyasBalance = parseInt(sovyasBalance);
+                            sovyasOutstanding = parseInt(sovyasOutstanding);
+                            yasTransferAmount = parseFloat(yasTransferAmount);
+                            sovTransferAmount = parseFloat(sovTransferAmount);
+                            sovyasPrice = parseFloat(sovyasPrice).toFixed(8);   
+
+
+                            var buysovyasBancor = (-sovyasOutstanding*(Math.pow((1-(yasTransferAmount /(sovyasBalance + yasTransferAmount))), (sovyasCW/100))-1)).toFixed(4);
+
+
+    
+                            var sellsovyasBancor = (-sovyasBalance*(Math.pow(((1-(sovTransferAmount / (sovyasOutstanding + sovTransferAmount)))), (1/(sovyasCW/100)))-1)).toFixed(4);
+            
+                            SOVYASPRICE.innerText = ("SOV Price = " + sovyasPrice + " YAS");
+
+
+
+                            buysovyasBancorDiv.textContent = (buysovyasBancor);
+                            sellsovyasBancorDiv.textContent = (sellsovyasBancor);
                          });
 
 
@@ -1381,6 +1450,7 @@
                                     else if (feeDiscount >= 80) feeDiscount = "75%";
                                     
                                     
+                                    document.getElementById('svxDiscount0').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
                                     document.getElementById('svxDiscount').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
@@ -1438,6 +1508,35 @@
 
                                     var buysoveosMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysoveosMultiplier;
                                     buysoveosMiningRate = parseFloat(buysoveosMiningRate).toFixed(4);
+
+
+
+
+                                    var sellsovyasMultiplierStart = document.getElementById('sov_transfer_amount0').value;
+                                   
+                                    sellsovyasMultiplierStart = format_eos_amount(sellsovyasMultiplierStart);
+
+                                    sellsovyasMultiplier = Math.log10((sellsovyasMultiplierStart / 200) / .21);
+                                    
+                                    var sellsovyasMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovyasMultiplier;
+
+                                    if (sellsovyasMiningRate < (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100))) sellsovyasMiningRate = 0;
+
+                                    sellsovyasMiningRate = parseFloat(sellsovyasMiningRate).toFixed(4);
+
+
+
+
+                                    var buysovyasMultiplierStart = document.getElementById('buysovyasBancorDiv').textContent;
+
+                                    buysovyasMultiplierStart = format_eos_amount(buysovyasMultiplierStart)*1E4;
+
+                                    buysovyasMultiplier = Math.log10(((buysovyasMultiplierStart/ 1e4) / 200) / .21);
+                                    if (buysovyasMultiplier < 1) buysovyasMultiplier = 0;
+                                    
+
+                                    var buysovyasMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysovyasMultiplier;
+                                    buysovyasMiningRate = parseFloat(buysovyasMiningRate).toFixed(4);
 
 
 
@@ -1654,6 +1753,10 @@
                                     document.getElementById('sellsoveosMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsoveosMiningRate + "</span>  SVX</span>";
 
                                     document.getElementById('buysoveosMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysoveosMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('sellsovyasMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovyasMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('buysovyasMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovyasMiningRate + "</span>  SVX</span>";
 
                                     document.getElementById('sellsovdappMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovdappMiningRate + "</span>  SVX</span>";
 
@@ -2357,6 +2460,106 @@
                         });
 
                     } 
+
+
+
+                    function buySOVYAS() {
+
+                        var transfer_amount = document.getElementById('yas_transfer_amount').value;
+                        alert("Exchange " + transfer_amount + " YAS for SOV");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " YAS";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'yastokencode',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                             
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'SOV',
+                                }
+
+                            }]
+                        }).then(result => {
+                            
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+
+                    }
+
+
+                    function sellSOVYAS() {
+                        
+                        var transfer_amount = document.getElementById('sov_transfer_amount0').value;
+                        alert("Exchange " + transfer_amount + " SOV for YAS");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " SOV";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'sovmintofeos',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                                //     data: {"from":scatter_account,"to":receiver_account,"quantity":betamount,"memo":memo}
+                                //      data: {"param": "createbet;;BIRD vs turtle;This is a description;Bird;bird;Turtle;turtle;43;123"}
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'YAS',
+                                }
+
+                            }]
+                        }).then(result => {
+                            // If Success
+
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+                            // Error details
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            //  nalert('<br><div class=\'checkmark_red\'></div>Error '+err.error.name+ '!<br><br>','white');
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+                    }
 
 
                     function buySOVDAPP() {
@@ -3066,6 +3269,10 @@
 
 
                 </script>
+
+                
+
+        
                 
         <!--this cointains the trading box and all it's info-->
         <div class="container border rounded bg-dark shadow">
@@ -3111,7 +3318,8 @@
     <br>
 <nav>
   <div class="nav nav-pills justify-content-center" id="nav-tab" role="tablist">
-    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-DAPP" role="tab" aria-controls="nav-DAPP" aria-selected="true">DAPP</a>
+    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-YAS" role="tab" aria-controls="nav-YAS" aria-selected="true">YAS</a>
+    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-DAPP" role="tab" aria-controls="nav-DAPP" aria-selected="false">DAPP</a>
     <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-TPT" role="tab" aria-controls="nav-TPT" aria-selected="false">TPT</a>
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-NDX" role="tab" aria-controls="nav-NDX" aria-selected="false">NDX</a>
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-PEOS" role="tab" aria-controls="nav-PEOS" aria-selected="false">PEOS</a>
@@ -3120,14 +3328,51 @@
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-POW" role="tab" aria-controls="nav-POW" aria-selected="false">POW</a>
   </div>
 </nav>
+
 <div class="tab-content" id="nav-tabContent">
-  <div class="tab-pane fade show active" id="nav-DAPP" role="tabpanel" aria-labelledby="nav-DAPP-tab">
+
+  <div class="tab-pane fade show active" id="nav-YAS" role="tabpanel" aria-labelledby="nav-YAS-tab">
+     <h6 id='svxDiscount0' class="text-center text-warning">...</h6>
+            <h6 class="text-center text-white">SOV/YAS Trading Balance</h6>
+            <row class="d-flex justify-content-around">
+                <small id="YASBALANCE" class="col text-center text-light">...</small>
+                <small id= "SOVYASBALANCE" class="col text-light text-center">...</small>
+            </row> 
+
+            <div class="row row-cols-2">
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='yas_transfer_amount' value= '100' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVYAS()'>SendYAS<br>Buy SOV/YAS</button>
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="buysovyasBancorDiv">...</small>
+                    <small class="text-center text-white">SOV before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="buysovyasMiningRateDiv">...</small>
+                </div>
+
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount0' value='420' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVYAS()'>SendSOV<br>Sell SOV/YAS</button> 
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="sellsovyasBancorDiv">...</small>
+                    <small class="text-center text-white">YAS before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="sellsovyasMiningRateDiv">...</small>
+                </div>
+            </div>
+            <br>
+
+        <div>
+            <p id="SOVYASPRICE" class="d-flex justify-content-center text-light">...</p>
+        </div>
+  </div>
+  <div class="tab-pane fade" id="nav-DAPP" role="tabpanel" aria-labelledby="nav-DAPP-tab">
      <h6 id='svxDiscount1' class="text-center text-warning">...</h6>
             <h6 class="text-center text-white">SOV/DAPP Trading Balance</h6>
             <row class="d-flex justify-content-around">
                 <small id="DAPPBALANCE" class="col text-center text-light">...</small>
                 <small id= "SOVDAPPBALANCE" class="col text-light text-center">...</small>
-            </row>  
+            </row> 
 
             <div class="row row-cols-2">
                 <div class="col text-center">
@@ -3233,6 +3478,8 @@
                 <small id="PEOSBALANCE" class="col text-center text-light">...</small>
                 <small id= "SOVPEOSBALANCE" class="col text-light text-center">...</small>
             </row>  
+
+           
 
             <div class="row row-cols-2">
                 <div class="col text-center">
@@ -3344,7 +3591,7 @@
 
             <div class="row row-cols-2">
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' id='pow_transfer_amount' step=".1"  value='1' min="0">
+                    <input class="text-center form-control mb-1" type='number' id='pow_transfer_amount' step=".1"  value='.1' min="0">
                     <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVPOW()'>SendPOW<br>Buy SOV/POW</button>
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="buysovpowBancorDiv">...</small>
