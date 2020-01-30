@@ -707,6 +707,10 @@
                                      document.getElementById('SOVDAPPBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
+                                if (document.getElementById('SOVCHEXBALANCE')) {
+                                     document.getElementById('SOVCHEXBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                }
+
                                 if (document.getElementById('SOVTPTBALANCE')) {
                                      document.getElementById('SOVTPTBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
@@ -788,6 +792,36 @@
                                 //document.getElementById('balance').innerHTML = "Your Balance: <span class='bold'>" + last + "</span>";
                                 if (document.getElementById('DAPPBALANCE')) {
                                     document.getElementById('DAPPBALANCE').innerHTML = "<span class='bold'>" + last + " DAPP</span>";
+                                }
+
+
+                            } catch (err) {
+
+
+                            }
+
+
+                        });
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "chexchexchex",
+                            "scope": scatter_account,
+                            "table": "accounts"
+                        }).then(function(value) {
+
+                            var wert = value.rows.length;
+
+                            try {
+                                var last = value.rows[0].balance;
+                                last = last.replace("CHEX", "");
+
+                                balance_token = last * 10000;
+
+                                //document.getElementById('balance').innerHTML = "Your Balance: <span class='bold'>" + last + "</span>";
+                                if (document.getElementById('CHEXBALANCE')) {
+                                    document.getElementById('CHEXBALANCE').innerHTML = "<span class='bold'>" + last + " CHEX</span>";
                                 }
 
 
@@ -1081,6 +1115,43 @@
                             buysovdappBancorDiv.textContent = (buysovdappBancor);
                             sellsovdappBancorDiv.textContent = (sellsovdappBancor);
                          });
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "sovdexrelays",
+                            "scope": "CHEX",
+                            "table": "pair"
+                        }).then(function(value) {
+      
+                            var sovchexPrice = value.rows[0].price;
+                            const sovchexCW = value.rows[0].cw;
+                            var sovchexBalance = value.rows[0].connectorbal;
+                            var sovchexOutstanding = value.rows[0].outstandingbal;
+                            var chexTransferAmount = document.getElementById('chex_transfer_amount').value;
+                            var sovTransferAmount = document.getElementById('sov_transfer_amount9').value;
+                            sovchexBalance = parseInt(sovchexBalance);
+                            sovchexOutstanding = parseInt(sovchexOutstanding);
+                            chexTransferAmount = parseFloat(chexTransferAmount);
+                            sovTransferAmount = parseFloat(sovTransferAmount);
+                            sovchexPrice = parseFloat(sovchexPrice).toFixed(8);   
+
+
+                            var buysovchexBancor = (-sovchexOutstanding*(Math.pow((1-(chexTransferAmount /(sovchexBalance + chexTransferAmount))), (sovchexCW/100))-1)).toFixed(4);
+
+
+    
+                            var sellsovchexBancor = (-sovchexBalance*(Math.pow(((1-(sovTransferAmount / (sovchexOutstanding + sovTransferAmount)))), (1/(sovchexCW/100)))-1)).toFixed(4);
+            
+                            SOVCHEXPRICE.innerText = ("SOV Price = " + sovchexPrice + " CHEX");
+
+
+
+                            buysovchexBancorDiv.textContent = (buysovchexBancor);
+                            sellsovchexBancorDiv.textContent = (sellsovchexBancor);
+                         });
+
+
 
                         eosobject.getTableRows({
                             "json": "true",
@@ -1468,6 +1539,8 @@
 
                                     document.getElementById('svxDiscount7').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
+                                    document.getElementById('svxDiscount9').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
+
 
                                 }
 
@@ -1746,6 +1819,35 @@
 
 
 
+
+                                    var sellsovchexMultiplierStart = document.getElementById('sov_transfer_amount9').value;
+                                   
+                                    sellsovchexMultiplierStart = format_eos_amount(sellsovchexMultiplierStart);
+
+                                    sellsovchexMultiplier = Math.log10((sellsovchexMultiplierStart / 200) / .21);
+                                    
+                                    var sellsovchexMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovchexMultiplier;
+
+                                    if (sellsovchexMiningRate < (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100))) sellsovchexMiningRate = 0;
+
+                                    sellsovchexMiningRate = parseFloat(sellsovchexMiningRate).toFixed(4);
+
+
+
+
+                                    var buysovchexMultiplierStart = document.getElementById('buysovchexBancorDiv').textContent;
+
+                                    buysovchexMultiplierStart = format_eos_amount(buysovchexMultiplierStart)*1E4;
+
+                                    buysovchexMultiplier = Math.log10(((buysovchexMultiplierStart/ 1e4) / 200) / .21);
+                                    if (buysovchexMultiplier < 1) buysovchexMultiplier = 0;
+                                    
+
+                                    var buysovchexMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysovchexMultiplier;
+                                    buysovchexMiningRate = parseFloat(buysovchexMiningRate).toFixed(4);
+
+
+
                                     var sovBurnAmount = document.getElementById('sov_burn_amount').value / 100;
 
                                     document.getElementById('svxMiningRate').innerHTML = "<span class='bold' style='font-size:14px;'>Mining Reward per Transfer: <span style='color:#00bb00'>" + mining_rate + "</span> SVX</span>";
@@ -1785,6 +1887,10 @@
                                     document.getElementById('sellsovpowMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovpowMiningRate + "</span>  SVX</span>";
 
                                     document.getElementById('buysovpowMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovpowMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('sellsovchexMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovchexMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('buysovchexMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovchexMiningRate + "</span>  SVX</span>";
 
 
                                     document.getElementById('svxMiningMultiplier').innerHTML = "<span class='bold' style='font-size:14px;'>Mining Multiplier per Transfer: " + mining_multiplier + "</span>";
@@ -3266,6 +3372,107 @@
 
 
 
+                    function buySOVCHEX() {
+
+                        var transfer_amount = document.getElementById('chex_transfer_amount').value;
+                        alert("Exchange " + transfer_amount + " CHEX for SOV");
+                        transfer_amount = format_pow_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " CHEX";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'chexchexchex',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                             
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'SOV',
+                                }
+
+                            }]
+                        }).then(result => {
+                            
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+
+                    }
+
+
+
+                    function sellSOVCHEX() {
+                        
+                        var transfer_amount = document.getElementById('sov_transfer_amount9').value;
+                        alert("Exchange " + transfer_amount + " SOV for CHEX");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " SOV";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'sovmintofeos',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                                //     data: {"from":scatter_account,"to":receiver_account,"quantity":betamount,"memo":memo}
+                                //      data: {"param": "createbet;;BIRD vs turtle;This is a description;Bird;bird;Turtle;turtle;43;123"}
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'CHEX',
+                                }
+
+                            }]
+                        }).then(result => {
+                            // If Success
+
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+                            // Error details
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            //  nalert('<br><div class=\'checkmark_red\'></div>Error '+err.error.name+ '!<br><br>','white');
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+                    }
+
+
+
 
 
                 </script>
@@ -3320,6 +3527,7 @@
   <div class="nav nav-pills justify-content-center" id="nav-tab" role="tablist">
     <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-YAS" role="tab" aria-controls="nav-YAS" aria-selected="true">YAS</a>
     <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-DAPP" role="tab" aria-controls="nav-DAPP" aria-selected="false">DAPP</a>
+    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-CHEX" role="tab" aria-controls="nav-CHEX" aria-selected="false">CHEX</a>
     <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-TPT" role="tab" aria-controls="nav-TPT" aria-selected="false">TPT</a>
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-NDX" role="tab" aria-controls="nav-NDX" aria-selected="false">NDX</a>
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-PEOS" role="tab" aria-controls="nav-PEOS" aria-selected="false">PEOS</a>
@@ -3401,6 +3609,45 @@
             <p id="SOVDAPPPRICE" class="d-flex justify-content-center text-light">...</p>
         </div>
   </div>
+
+
+  <div class="tab-pane fade" id="nav-CHEX" role="tabpanel" aria-labelledby="nav-CHEX-tab">
+     <h6 id='svxDiscount9' class="text-center text-warning">...</h6>
+            <h6 class="text-center text-white">SOV/CHEX Trading Balance</h6>
+            <row class="d-flex justify-content-around">
+                <small id="CHEXBALANCE" class="col text-center text-light">...</small>
+                <small id= "SOVCHEXBALANCE" class="col text-light text-center">...</small>
+            </row> 
+
+            <div class="row row-cols-2">
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='chex_transfer_amount' value= '200' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVCHEX()'>SendCHEX<br>Buy SOV/CHEX</button>
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="buysovchexBancorDiv">...</small>
+                    <small class="text-center text-white">SOV before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="buysovchexMiningRateDiv">...</small>
+                </div>
+
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount9' value='420' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVCHEX()'>SendSOV<br>Sell SOV/CHEX</button> 
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="sellsovchexBancorDiv">...</small>
+                    <small class="text-center text-white">CHEX before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="sellsovchexMiningRateDiv">...</small>
+                </div>
+            </div>
+            <br>
+
+        <div>
+            <p id="SOVCHEXPRICE" class="d-flex justify-content-center text-light">...</p>
+        </div>
+  </div>
+
+
   <div class="tab-pane fade" id="nav-TPT" role="tabpanel" aria-labelledby="nav-TPT-tab">
     <h6 id='svxDiscount2' class="text-center text-warning">...</h6>
             <h6 class="text-center text-white">SOV/TPT Trading Balance</h6>
