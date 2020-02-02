@@ -752,7 +752,7 @@
 
                         eosobject.getTableRows({
                             "json": "true",
-                            "code": "tokens.wal",
+                            "code": "tethertether",
                             "scope": scatter_account,
                             "table": "accounts"
                         }).then(function(value) {
@@ -3579,12 +3579,12 @@
 
                         var transfer_amount = document.getElementById('usdt_transfer_amount').value;
                         alert("Exchange " + transfer_amount + " USDT for SOV");
-                        transfer_amount = format_pow_amount(transfer_amount);
+                        transfer_amount = format_eos_amount(transfer_amount);
                         transfer_amount = transfer_amount + " USDT";
 
                         eosobject.transaction({
                             actions: [{
-                                account: 'tokens.wal',
+                                account: 'tethertether',
                                 //      name: 'admin2',
                                 name: 'transfer',
                                 authorization: [{
