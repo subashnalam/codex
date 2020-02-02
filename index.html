@@ -305,7 +305,7 @@
         <small>Mining transfers per transaction</small>
         </div>
       
-        <div class='d-flex'>SOV transfer amount:<input type='number' min="0" class='text-center form-control m-2' id='sov_burn_amount' value='210' oninput="this.value = Math.abs(this.value)"></div>
+        <div class='d-flex'>SOV transfer amount:<input type='number' min="0" class='text-center form-control m-2' id='sov_burn_amount' value='175' oninput="this.value = Math.abs(this.value)"></div>
 
         <h6 id='svxMiningMultiplier' class="text-center">...</h6>
 
@@ -547,7 +547,7 @@
                     // DoInit BEGIN ------------------------
                     function doinit() {
                         /*
-                        svxmintofeos	
+                        svxmintofeos    
                         svxmintofeos - open
                         letsjustdoit active
                         owner: letsjustdoit
@@ -699,6 +699,10 @@
                                     document.getElementById('SOVBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
+                                if (document.getElementById('SOVUSDTBALANCE')) {
+                                    document.getElementById('SOVUSDTBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                }
+
                                 if (document.getElementById('SOVYASBALANCE')) {
                                     document.getElementById('SOVYASBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
@@ -733,6 +737,37 @@
 
                                 if (document.getElementById('SOVPOWBALANCE')) {
                                     document.getElementById('SOVPOWBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                }
+
+
+                            } catch (err) {
+
+
+                            }
+
+
+                        });
+
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "tokens.wal",
+                            "scope": scatter_account,
+                            "table": "accounts"
+                        }).then(function(value) {
+
+                            var wert = value.rows.length;
+
+                            try {
+                                var last = value.rows[0].balance;
+                                last = last.replace("USDT", "");
+
+                                balance_token = last * 10000;
+
+                                //document.getElementById('balance').innerHTML = "Your Balance: <span class='bold'>" + last + "</span>";
+                                if (document.getElementById('USDTBALANCE')) {
+                                    document.getElementById('USDTBALANCE').innerHTML = "<span class='bold'>" + last + " USDT</span>";
                                 }
 
 
@@ -1043,6 +1078,41 @@
 
                             buysoveosBancorDiv.textContent = (buysoveosBancor);
                             sellsoveosBancorDiv.textContent = (sellsoveosBancor);
+                         });
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "sovdexrelays",
+                            "scope": "USDT",
+                            "table": "pair"
+                        }).then(function(value) {
+      
+                            var sovusdtPrice = value.rows[0].price;
+                            const sovusdtCW = value.rows[0].cw;
+                            var sovusdtBalance = value.rows[0].connectorbal;
+                            var sovusdtOutstanding = value.rows[0].outstandingbal;
+                            var usdtTransferAmount = document.getElementById('usdt_transfer_amount').value;
+                            var sovTransferAmount = document.getElementById('sov_transfer_amount10').value;
+                            sovusdtBalance = parseInt(sovusdtBalance);
+                            sovusdtOutstanding = parseInt(sovusdtOutstanding);
+                            usdtTransferAmount = parseFloat(usdtTransferAmount);
+                            sovTransferAmount = parseFloat(sovTransferAmount);
+                            sovusdtPrice = parseFloat(sovusdtPrice).toFixed(8);   
+
+
+                            var buysovusdtBancor = (-sovusdtOutstanding*(Math.pow((1-(usdtTransferAmount /(sovusdtBalance + usdtTransferAmount))), (sovusdtCW/100))-1)).toFixed(4);
+
+
+    
+                            var sellsovusdtBancor = (-sovusdtBalance*(Math.pow(((1-(sovTransferAmount / (sovusdtOutstanding + sovTransferAmount)))), (1/(sovusdtCW/100)))-1)).toFixed(4);
+            
+                            SOVUSDTPRICE.innerText = ("SOV Price = " + sovusdtPrice + " USDT");
+
+
+
+                            buysovusdtBancorDiv.textContent = (buysovusdtBancor);
+                            sellsovusdtBancorDiv.textContent = (sellsovusdtBancor);
                          });
 
 
@@ -1541,15 +1611,17 @@
 
                                     document.getElementById('svxDiscount9').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
+                                    document.getElementById('svxDiscount10').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
+
 
                                 }
 
 
                                     var mining_multiplier_start = document.getElementById('sov_burn_amount').value;
-                                    if (mining_multiplier_start < 210) mining_multiplier_start = 0;
+                                    if (mining_multiplier_start < 175) mining_multiplier_start = 0;
                                     mining_multiplier_start = format_eos_amount(mining_multiplier_start);
                                     
-                                    mining_multiplier = Math.log10((mining_multiplier_start / 100) / .21);
+                                    mining_multiplier = Math.log10((mining_multiplier_start / 100) / .175);
 
                                     var mining_rate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * mining_multiplier;
                                     mining_rate = parseFloat(mining_rate).toFixed(4);
@@ -1561,7 +1633,7 @@
                                    
                                     sellsoveosMultiplierStart = format_eos_amount(sellsoveosMultiplierStart);
 
-                                    sellsoveosMultiplier = Math.log10((sellsoveosMultiplierStart / 200) / .21);
+                                    sellsoveosMultiplier = Math.log10((sellsoveosMultiplierStart / 200) / .175);
                                     
                                     var sellsoveosMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsoveosMultiplier;
 
@@ -1575,12 +1647,39 @@
 
                                     buysoveosMultiplierStart = format_eos_amount(buysoveosMultiplierStart)*1E4;
 
-                                    buysoveosMultiplier = Math.log10(((buysoveosMultiplierStart/ 1e4) / 200) / .21);
+                                    buysoveosMultiplier = Math.log10(((buysoveosMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysoveosMultiplier < 1) buysoveosMultiplier = 0;
                                     
 
                                     var buysoveosMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysoveosMultiplier;
                                     buysoveosMiningRate = parseFloat(buysoveosMiningRate).toFixed(4);
+
+
+                                    var sellsovusdtMultiplierStart = document.getElementById('sov_transfer_amount10').value;
+                                   
+                                    sellsovusdtMultiplierStart = format_eos_amount(sellsovusdtMultiplierStart);
+
+                                    sellsovusdtMultiplier = Math.log10((sellsovusdtMultiplierStart / 200) / .175);
+                                    
+                                    var sellsovusdtMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovusdtMultiplier;
+
+                                    if (sellsovusdtMiningRate < (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100))) sellsovusdtMiningRate = 0;
+
+                                    sellsovusdtMiningRate = parseFloat(sellsovusdtMiningRate).toFixed(4);
+
+
+
+
+                                    var buysovusdtMultiplierStart = document.getElementById('buysovusdtBancorDiv').textContent;
+
+                                    buysovusdtMultiplierStart = format_eos_amount(buysovusdtMultiplierStart)*1E4;
+
+                                    buysovusdtMultiplier = Math.log10(((buysovusdtMultiplierStart/ 1e4) / 200) / .175);
+                                    if (buysovusdtMultiplier < 1) buysovusdtMultiplier = 0;
+                                    
+
+                                    var buysovusdtMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysovusdtMultiplier;
+                                    buysovusdtMiningRate = parseFloat(buysovusdtMiningRate).toFixed(4);
 
 
 
@@ -1589,7 +1688,7 @@
                                    
                                     sellsovyasMultiplierStart = format_eos_amount(sellsovyasMultiplierStart);
 
-                                    sellsovyasMultiplier = Math.log10((sellsovyasMultiplierStart / 200) / .21);
+                                    sellsovyasMultiplier = Math.log10((sellsovyasMultiplierStart / 200) / .175);
                                     
                                     var sellsovyasMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovyasMultiplier;
 
@@ -1604,7 +1703,7 @@
 
                                     buysovyasMultiplierStart = format_eos_amount(buysovyasMultiplierStart)*1E4;
 
-                                    buysovyasMultiplier = Math.log10(((buysovyasMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovyasMultiplier = Math.log10(((buysovyasMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovyasMultiplier < 1) buysovyasMultiplier = 0;
                                     
 
@@ -1618,7 +1717,7 @@
                                    
                                     sellsovdappMultiplierStart = format_eos_amount(sellsovdappMultiplierStart);
 
-                                    sellsovdappMultiplier = Math.log10((sellsovdappMultiplierStart / 200) / .21);
+                                    sellsovdappMultiplier = Math.log10((sellsovdappMultiplierStart / 200) / .175);
                                     
                                     var sellsovdappMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovdappMultiplier;
 
@@ -1633,7 +1732,7 @@
 
                                     buysovdappMultiplierStart = format_eos_amount(buysovdappMultiplierStart)*1E4;
 
-                                    buysovdappMultiplier = Math.log10(((buysovdappMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovdappMultiplier = Math.log10(((buysovdappMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovdappMultiplier < 1) buysovdappMultiplier = 0;
                                     
 
@@ -1647,7 +1746,7 @@
                                    
                                     sellsovtptMultiplierStart = format_eos_amount(sellsovtptMultiplierStart);
 
-                                    sellsovtptMultiplier = Math.log10((sellsovtptMultiplierStart / 200) / .21);
+                                    sellsovtptMultiplier = Math.log10((sellsovtptMultiplierStart / 200) / .175);
                                     
                                     var sellsovtptMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovtptMultiplier;
 
@@ -1662,7 +1761,7 @@
 
                                     buysovtptMultiplierStart = format_eos_amount(buysovtptMultiplierStart)*1E4;
 
-                                    buysovtptMultiplier = Math.log10(((buysovtptMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovtptMultiplier = Math.log10(((buysovtptMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovtptMultiplier < 1) buysovtptMultiplier = 0;
                                     
 
@@ -1676,7 +1775,7 @@
                                    
                                     sellsovndxMultiplierStart = format_eos_amount(sellsovndxMultiplierStart);
 
-                                    sellsovndxMultiplier = Math.log10((sellsovndxMultiplierStart / 200) / .21);
+                                    sellsovndxMultiplier = Math.log10((sellsovndxMultiplierStart / 200) / .175);
                                     
                                     var sellsovndxMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovndxMultiplier;
 
@@ -1691,7 +1790,7 @@
 
                                     buysovndxMultiplierStart = format_eos_amount(buysovndxMultiplierStart)*1E4;
 
-                                    buysovndxMultiplier = Math.log10(((buysovndxMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovndxMultiplier = Math.log10(((buysovndxMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovndxMultiplier < 1) buysovndxMultiplier = 0;
                                     
 
@@ -1705,7 +1804,7 @@
                                    
                                     sellsovpeosMultiplierStart = format_eos_amount(sellsovpeosMultiplierStart);
 
-                                    sellsovpeosMultiplier = Math.log10((sellsovpeosMultiplierStart / 200) / .21);
+                                    sellsovpeosMultiplier = Math.log10((sellsovpeosMultiplierStart / 200) / .175);
                                     
                                     var sellsovpeosMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovpeosMultiplier;
 
@@ -1720,7 +1819,7 @@
 
                                     buysovpeosMultiplierStart = format_eos_amount(buysovpeosMultiplierStart)*1E4;
 
-                                    buysovpeosMultiplier = Math.log10(((buysovpeosMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovpeosMultiplier = Math.log10(((buysovpeosMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovpeosMultiplier < 1) buysovpeosMultiplier = 0;
                                     
 
@@ -1734,7 +1833,7 @@
                                    
                                     sellsovpglMultiplierStart = format_eos_amount(sellsovpglMultiplierStart);
 
-                                    sellsovpglMultiplier = Math.log10((sellsovpglMultiplierStart / 200) / .21);
+                                    sellsovpglMultiplier = Math.log10((sellsovpglMultiplierStart / 200) / .175);
                                     
                                     var sellsovpglMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovpglMultiplier;
 
@@ -1749,7 +1848,7 @@
 
                                     buysovpglMultiplierStart = format_eos_amount(buysovpglMultiplierStart)*1E4;
 
-                                    buysovpglMultiplier = Math.log10(((buysovpglMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovpglMultiplier = Math.log10(((buysovpglMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovpglMultiplier < 1) buysovpglMultiplier = 0;
                                     
 
@@ -1763,7 +1862,7 @@
                                    
                                     sellsovdiceMultiplierStart = format_eos_amount(sellsovdiceMultiplierStart);
 
-                                    sellsovdiceMultiplier = Math.log10((sellsovdiceMultiplierStart / 200) / .21);
+                                    sellsovdiceMultiplier = Math.log10((sellsovdiceMultiplierStart / 200) / .175);
                                     
                                     var sellsovdiceMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovdiceMultiplier;
 
@@ -1778,7 +1877,7 @@
 
                                     buysovdiceMultiplierStart = format_eos_amount(buysovdiceMultiplierStart)*1E4;
 
-                                    buysovdiceMultiplier = Math.log10(((buysovdiceMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovdiceMultiplier = Math.log10(((buysovdiceMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovdiceMultiplier < 1) buysovdiceMultiplier = 0;
                                     
 
@@ -1795,7 +1894,7 @@
                                    
                                     sellsovpowMultiplierStart = format_eos_amount(sellsovpowMultiplierStart);
 
-                                    sellsovpowMultiplier = Math.log10((sellsovpowMultiplierStart / 200) / .21);
+                                    sellsovpowMultiplier = Math.log10((sellsovpowMultiplierStart / 200) / .175);
                                     
                                     var sellsovpowMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovpowMultiplier;
 
@@ -1810,7 +1909,7 @@
 
                                     buysovpowMultiplierStart = format_eos_amount(buysovpowMultiplierStart)*1E4;
 
-                                    buysovpowMultiplier = Math.log10(((buysovpowMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovpowMultiplier = Math.log10(((buysovpowMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovpowMultiplier < 1) buysovpowMultiplier = 0;
                                     
 
@@ -1824,7 +1923,7 @@
                                    
                                     sellsovchexMultiplierStart = format_eos_amount(sellsovchexMultiplierStart);
 
-                                    sellsovchexMultiplier = Math.log10((sellsovchexMultiplierStart / 200) / .21);
+                                    sellsovchexMultiplier = Math.log10((sellsovchexMultiplierStart / 200) / .175);
                                     
                                     var sellsovchexMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovchexMultiplier;
 
@@ -1839,7 +1938,7 @@
 
                                     buysovchexMultiplierStart = format_eos_amount(buysovchexMultiplierStart)*1E4;
 
-                                    buysovchexMultiplier = Math.log10(((buysovchexMultiplierStart/ 1e4) / 200) / .21);
+                                    buysovchexMultiplier = Math.log10(((buysovchexMultiplierStart/ 1e4) / 200) / .175);
                                     if (buysovchexMultiplier < 1) buysovchexMultiplier = 0;
                                     
 
@@ -1848,13 +1947,17 @@
 
 
 
-                                    var sovBurnAmount = document.getElementById('sov_burn_amount').value / 100;
+                                    var sovBurnAmount = document.getElementById('sov_burn_amount').value * 0.012;
 
                                     document.getElementById('svxMiningRate').innerHTML = "<span class='bold' style='font-size:14px;'>Mining Reward per Transfer: <span style='color:#00bb00'>" + mining_rate + "</span> SVX</span>";
 
                                     document.getElementById('sellsoveosMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsoveosMiningRate + "</span>  SVX</span>";
 
                                     document.getElementById('buysoveosMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysoveosMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('sellsovusdtMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovusdtMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('buysovusdtMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovusdtMiningRate + "</span>  SVX</span>";
 
                                     document.getElementById('sellsovyasMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovyasMiningRate + "</span>  SVX</span>";
 
@@ -3472,6 +3575,106 @@
                     }
 
 
+                    function buySOVUSDT() {
+
+                        var transfer_amount = document.getElementById('usdt_transfer_amount').value;
+                        alert("Exchange " + transfer_amount + " USDT for SOV");
+                        transfer_amount = format_pow_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " USDT";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'tokens.wal',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                             
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'SOV',
+                                }
+
+                            }]
+                        }).then(result => {
+                            
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+
+                    }
+
+
+
+                    function sellSOVUSDT() {
+                        
+                        var transfer_amount = document.getElementById('sov_transfer_amount10').value;
+                        alert("Exchange " + transfer_amount + " SOV for USDT");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " SOV";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'sovmintofeos',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                                //     data: {"from":scatter_account,"to":receiver_account,"quantity":betamount,"memo":memo}
+                                //      data: {"param": "createbet;;BIRD vs turtle;This is a description;Bird;bird;Turtle;turtle;43;123"}
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'USDT',
+                                }
+
+                            }]
+                        }).then(result => {
+                            // If Success
+
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+                            // Error details
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            //  nalert('<br><div class=\'checkmark_red\'></div>Error '+err.error.name+ '!<br><br>','white');
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+                    }
+
+
 
 
 
@@ -3484,6 +3687,18 @@
         <!--this cointains the trading box and all it's info-->
         <div class="container border rounded bg-dark shadow">
         <br>
+            <nav>
+                <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-EOS" role="tab" aria-controls="nav-EOS" aria-selected="true">EOS</a>
+                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-USDT" role="tab" aria-controls="nav-USDT" aria-selected="false">USDT</a>
+                </div>
+            </nav>
+            <br>
+
+            <div class="tab-content" id="nav-tabContent">
+
+                <div class="tab-pane fade show active" id="nav-EOS" role="tabpanel" aria-labelledby="nav-EOS-tab">
+
             <h6 id='svxDiscount' class="text-center text-warning">...</h6>
             <h6 class="text-center text-white">SOV/EOS Trading Balance</h6>
             <row class="d-flex justify-content-around">
@@ -3503,7 +3718,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVEOS()'>SendSOV<br>Sell SOV/EOS</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsoveosBancorDiv">...</small>
@@ -3518,6 +3733,44 @@
             <p id="SOVEOSPRICE" class="d-flex justify-content-center text-light">...</p>
         </div>
     </div>
+
+    <div class="tab-pane fade" id="nav-USDT" role="tabpanel" aria-labelledby="nav-USDT-tab">
+     <h6 id='svxDiscount10' class="text-center text-warning">...</h6>
+            <h6 class="text-center text-white">SOV/USDT Trading Balance</h6>
+            <row class="d-flex justify-content-around">
+                <small id="USDTBALANCE" class="col text-center text-light">...</small>
+                <small id= "SOVUSDTBALANCE" class="col text-light text-center">...</small>
+            </row> 
+
+            <div class="row row-cols-2">
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='usdt_transfer_amount' value= '1' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVUSDT()'>SendUSDT<br>Buy SOV/USDT</button>
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="buysovusdtBancorDiv">...</small>
+                    <small class="text-center text-white">SOV before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="buysovusdtMiningRateDiv">...</small>
+                </div>
+
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount10' value='350' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVUSDT()'>SendSOV<br>Sell SOV/USDT</button> 
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="sellsovusdtBancorDiv">...</small>
+                    <small class="text-center text-white">USDT before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="sellsovusdtMiningRateDiv">...</small>
+                </div>
+            </div>
+            <br>
+
+        <div>
+            <p id="SOVUSDTPRICE" class="d-flex justify-content-center text-light">...</p>
+        </div>
+  </div>
+</div>
+</div>
     <br>
 
 
@@ -3536,6 +3789,7 @@
     <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-POW" role="tab" aria-controls="nav-POW" aria-selected="false">POW</a>
   </div>
 </nav>
+<br>
 
 <div class="tab-content" id="nav-tabContent">
 
@@ -3559,7 +3813,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount0' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount0' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVYAS()'>SendSOV<br>Sell SOV/YAS</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovyasBancorDiv">...</small>
@@ -3594,7 +3848,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount1' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount1' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVDAPP()'>SendSOV<br>Sell SOV/DAPP</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovdappBancorDiv">...</small>
@@ -3631,7 +3885,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount9' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount9' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVCHEX()'>SendSOV<br>Sell SOV/CHEX</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovchexBancorDiv">...</small>
@@ -3668,7 +3922,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount2' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount2' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVTPT()'>SendSOV<br>Sell SOV/TPT</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovtptBancorDiv">...</small>
@@ -3703,7 +3957,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount3' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount3' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVNDX()'>SendSOV<br>Sell SOV/NDX</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovndxBancorDiv">...</small>
@@ -3740,7 +3994,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount4' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount4' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVPEOS()'>SendSOV<br>Sell SOV/PEOS</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovpeosBancorDiv">...</small>
@@ -3775,7 +4029,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount5' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount5' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVPGL()'>SendSOV<br>Sell SOV/PGL</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovpglBancorDiv">...</small>
@@ -3810,7 +4064,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount6' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount6' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVDICE()'>SendSOV<br>Sell SOV/DICE</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovdiceBancorDiv">...</small>
@@ -3848,7 +4102,7 @@
                 </div>
 
                 <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0.0001" id='sov_transfer_amount7' value='420' oninput="this.value = Math.abs(this.value)">
+                    <input class="text-center form-control mb-1" type='number' min="0.0001" id='sov_transfer_amount7' value='350' oninput="this.value = Math.abs(this.value)">
                     <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVPOW()'>SendSOV<br>Sell SOV/POW</button> 
                     <small class="text-center text-white">Receive</small>
                     <small class="text-center text-warning" id="sellsovpowBancorDiv">...</small>
