@@ -2068,33 +2068,14 @@
                     function change_node_click() {
                         var node = document.getElementById('scatter_host').value;
 
-                        var node_array = node.split(":");
-                        var node_url = node_array[0];
-                        var node_port = node_array[1];
-
-                        //alert("change Node " + node_url + " - " + node_port);
-
-                        var pathname = new URL(node).pathname;
-
-                        //return;
-
-                        /*
-                        https://jungle2.cryptolions.io:443
-                        https://api.jungle.alohaeos.com:443
-
-                        api.jungle.alohaeos.com:443
-                        jungle2.cryptolions.io:443
-
-                        */
-                        //var scatter_host = 'jungle2.cryptolions.io';   
-                        //var scatter_host = 'api.jungle.alohaeos.com';   
+                           
                         scatter_host = node;
 
                         const network = ScatterJS.Network.fromJson({
                             blockchain: 'eos',
                             chainId: 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-                            host: node_url,
-                            port: node_port,
+                            host: scatter_host,
+                            port: 443,
                             protocol: 'https'
                         });
 
@@ -4140,7 +4121,7 @@
     </div>
                     
     <script>
-        var init_node = "api.eosdetroit.io:443";
+        var init_node = "eu1.eosdac.io";
         document.getElementById('scatter_host').value = init_node;
     </script>
                     
