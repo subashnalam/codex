@@ -643,6 +643,8 @@
 
                                 var balance = value.core_liquid_balance;
 
+                                var balance1 = value.core_liquid_balance;
+
                                 var cpu_proz = (cpu_used / cpu_max) * 100;
                                 cpu_proz = Number(cpu_proz).toFixed(1);
 
@@ -651,6 +653,10 @@
 
                                 if (document.getElementById('balance')) {
                                     document.getElementById('balance').innerHTML = "" + balance;
+                                }
+
+                                if (document.getElementById('balance1')) {
+                                    document.getElementById('balance1').innerHTML = "" + balance;
                                 }
 
                                 if (document.getElementById('mycpu')) {
@@ -707,6 +713,10 @@
                                     document.getElementById('SOVUSDTBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
+                                 if (document.getElementById('SOVSVXBALANCE')) {
+                                    document.getElementById('SOVSVXBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
+                                }
+
                                 if (document.getElementById('SOVYASBALANCE')) {
                                     document.getElementById('SOVYASBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
@@ -731,9 +741,7 @@
                                      document.getElementById('SOVPEOSBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
                                 }
 
-                                if (document.getElementById('SOVPGLBALANCE')) {
-                                     document.getElementById('SOVPGLBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
-                                }
+                                
 
                                 if (document.getElementById('SOVDICEBALANCE')) {
                                     document.getElementById('SOVDICEBALANCE').innerHTML = "<span class='bold'>" + last + " SOV</span>";
@@ -961,34 +969,7 @@
                         });
 
 
-                         eosobject.getTableRows({
-                            "json": "true",
-                            "code": "prospectorsg",
-                            "scope": scatter_account,
-                            "table": "accounts"
-                        }).then(function(value) {
-
-                            var wert = value.rows.length;
-
-                            try {
-                                var last = value.rows[0].balance;
-                                last = last.replace("PGL", "");
-
-                                balance_token = last * 10000;
-
-                                //document.getElementById('balance').innerHTML = "Your Balance: <span class='bold'>" + last + "</span>";
-                                if (document.getElementById('PGLBALANCE')) {
-                                    document.getElementById('PGLBALANCE').innerHTML = "<span class='bold'>" + last + " PGL</span>";
-                                }
-
-
-                            } catch (err) {
-
-
-                            }
-
-
-                        });
+                         
 
 
                         eosobject.getTableRows({
@@ -1118,6 +1099,80 @@
                             buysovusdtBancorDiv.textContent = (buysovusdtBancor);
                             sellsovusdtBancorDiv.textContent = (sellsovusdtBancor);
                          });
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "sovdexrelays",
+                            "scope": "EOS",
+                            "table": "svxpair"
+                        }).then(function(value) {
+      
+                            var svxeosPrice = value.rows[0].price;
+                            const svxeosCW = value.rows[0].cw;
+                            var svxeosBalance = value.rows[0].connectorbal;
+                            var svxeosOutstanding = value.rows[0].outstandingbal;
+                            var svxTransferAmount = document.getElementById('svx_transfer_amount').value;
+                            var eosTransferAmount = document.getElementById('eos_transfer_amount1').value;
+                            svxeosBalance = parseInt(svxeosBalance);
+                            svxeosOutstanding = parseInt(svxeosOutstanding);
+                            eosTransferAmount = parseFloat(eosTransferAmount);
+                            svxTransferAmount = parseFloat(svxTransferAmount);
+                            svxeosPrice = parseFloat(svxeosPrice).toFixed(8);   
+
+
+                            var buysvxeosBancor = (-svxeosOutstanding*(Math.pow((1-(eosTransferAmount /(svxeosBalance + eosTransferAmount))), (svxeosCW/100))-1)).toFixed(4);
+
+
+    
+                            var sellsvxeosBancor = (-svxeosBalance*(Math.pow(((1-(svxTransferAmount / (svxeosOutstanding + svxTransferAmount)))), (1/(svxeosCW/100)))-1)).toFixed(4);
+            
+                            SVXEOSPRICE.innerText = ("SVX Price = " + svxeosPrice + " EOS");
+
+
+
+                            buysvxeosBancorDiv.textContent = (buysvxeosBancor);
+                            sellsvxeosBancorDiv.textContent = (sellsvxeosBancor);
+                         });
+
+
+
+                        eosobject.getTableRows({
+                            "json": "true",
+                            "code": "sovdexrelays",
+                            "scope": "SVX",
+                            "table": "pair"
+                        }).then(function(value) {
+      
+                            var sovsvxPrice = value.rows[0].price;
+                            const sovsvxCW = value.rows[0].cw;
+                            var sovsvxBalance = value.rows[0].connectorbal;
+                            var sovsvxOutstanding = value.rows[0].outstandingbal;
+                            var svxTransferAmount = document.getElementById('svx_transfer_amount1').value;
+                            var sovTransferAmount = document.getElementById('sov_transfer_amount77').value;
+                            sovsvxBalance = parseInt(sovsvxBalance);
+                            sovsvxOutstanding = parseInt(sovsvxOutstanding);
+                            svxTransferAmount = parseFloat(svxTransferAmount);
+                            sovTransferAmount = parseFloat(sovTransferAmount);
+                            sovsvxPrice = parseFloat(sovsvxPrice).toFixed(8);   
+
+
+                            var buysovsvxBancor = (-sovsvxOutstanding*(Math.pow((1-(svxTransferAmount /(sovsvxBalance + svxTransferAmount))), (sovsvxCW/100))-1)).toFixed(4);
+
+
+    
+                            var sellsovsvxBancor = (-sovsvxBalance*(Math.pow(((1-(sovTransferAmount / (sovsvxOutstanding + sovTransferAmount)))), (1/(sovsvxCW/100)))-1)).toFixed(4);
+            
+                            SOVSVXPRICE.innerText = ("SOV Price = " + sovsvxPrice + " SVX");
+
+
+
+                            buysovsvxBancorDiv.textContent = (buysovsvxBancor);
+                            sellsovsvxBancorDiv.textContent = (sellsovsvxBancor);
+                         });
+
+
+
 
 
                         eosobject.getTableRows({
@@ -1333,39 +1388,7 @@
                          });
 
 
-                        eosobject.getTableRows({
-                            "json": "true",
-                            "code": "sovdexrelays",
-                            "scope": "PGL",
-                            "table": "pair"
-                        }).then(function(value) {
-      
-                            var sovpglPrice = value.rows[0].price;
-                            const sovpglCW = value.rows[0].cw;
-                            var sovpglBalance = value.rows[0].connectorbal;
-                            var sovpglOutstanding = value.rows[0].outstandingbal;
-                            var pglTransferAmount = document.getElementById('pgl_transfer_amount').value;
-                            var sovTransferAmount = document.getElementById('sov_transfer_amount5').value;
-                            sovpglBalance = parseInt(sovpglBalance);
-                            sovpglOutstanding = parseInt(sovpglOutstanding);
-                            pglTransferAmount = parseFloat(pglTransferAmount);
-                            sovTransferAmount = parseFloat(sovTransferAmount);
-                            sovpglPrice = parseFloat(sovpglPrice).toFixed(8);   
-
-
-                            var buysovpglBancor = (-sovpglOutstanding*(Math.pow((1-(pglTransferAmount /(sovpglBalance + pglTransferAmount))), (sovpglCW/100))-1)).toFixed(4);
-
-
-    
-                            var sellsovpglBancor = (-sovpglBalance*(Math.pow(((1-(sovTransferAmount / (sovpglOutstanding + sovTransferAmount)))), (1/(sovpglCW/100)))-1)).toFixed(4);
-            
-                            SOVPGLPRICE.innerText = ("SOV Price = " + sovpglPrice + " PGL");
-
-
-
-                            buysovpglBancorDiv.textContent = (buysovpglBancor);
-                            sellsovpglBancorDiv.textContent = (sellsovpglBancor);
-                         });
+                        
 
 
 
@@ -1527,6 +1550,16 @@
                                 document.getElementById("svx_to_stake").placeholder = "Max " + svxUserLiquidBalance;
                                 document.getElementById("svx_to_unstake").placeholder = "Max " + svxPowerAmount;
 
+                                 if (document.getElementById('SVXBALANCE')) {
+                                     document.getElementById('SVXBALANCE').innerHTML = "<span class='bold'>" + svxUserLiquidBalance + " SVX</span>";
+                                }
+
+                                if (document.getElementById('SVXBALANCE1')) {
+                                     document.getElementById('SVXBALANCE1').innerHTML = "<span class='bold'>" + svxUserLiquidBalance + " SVX</span>";
+                                }
+
+
+
 
 
 
@@ -1607,7 +1640,7 @@
 
                                     document.getElementById('svxDiscount4').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
-                                    document.getElementById('svxDiscount5').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
+                                  
 
                                     document.getElementById('svxDiscount6').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
@@ -1616,6 +1649,10 @@
                                     document.getElementById('svxDiscount9').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
                                     document.getElementById('svxDiscount10').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
+
+                                     document.getElementById('svxDiscount77').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
+
+                                      document.getElementById('svxDiscount76').innerHTML = "<span class='bold' style='font-size:14px;'>Your trading fee discount for staking SVX: <span style='color:#00bb00'>" + feeDiscount + "</%span></span>";
 
 
                                 }
@@ -1684,6 +1721,38 @@
 
                                     var buysovusdtMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysovusdtMultiplier;
                                     buysovusdtMiningRate = parseFloat(buysovusdtMiningRate).toFixed(4);
+
+
+
+                                    var sellsovsvxMultiplierStart = document.getElementById('sov_transfer_amount77').value;
+                                   
+                                    sellsovsvxMultiplierStart = format_eos_amount(sellsovsvxMultiplierStart);
+
+                                    sellsovsvxMultiplier = Math.log10((sellsovsvxMultiplierStart / 200) / .175);
+                                    
+                                    var sellsovsvxMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovsvxMultiplier;
+
+                                    if (sellsovsvxMiningRate < (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100))) sellsovsvxMiningRate = 0;
+
+                                    sellsovsvxMiningRate = parseFloat(sellsovsvxMiningRate).toFixed(4);
+
+
+
+
+                                    var buysovsvxMultiplierStart = document.getElementById('buysovsvxBancorDiv').textContent;
+
+                                    buysovsvxMultiplierStart = format_eos_amount(buysovsvxMultiplierStart)*1E4;
+
+                                    buysovsvxMultiplier = Math.log10(((buysovsvxMultiplierStart/ 1e4) / 200) / .175);
+                                    if (buysovsvxMultiplier < 1) buysovsvxMultiplier = 0;
+                                    
+
+                                    var buysovsvxMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysovsvxMultiplier;
+                                    buysovsvxMiningRate = parseFloat(buysovsvxMiningRate).toFixed(4);
+
+
+
+
 
 
 
@@ -1833,31 +1902,7 @@
 
 
 
-                                    var sellsovpglMultiplierStart = document.getElementById('sov_transfer_amount5').value;
-                                   
-                                    sellsovpglMultiplierStart = format_eos_amount(sellsovpglMultiplierStart);
-
-                                    sellsovpglMultiplier = Math.log10((sellsovpglMultiplierStart / 200) / .175);
                                     
-                                    var sellsovpglMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * sellsovpglMultiplier;
-
-                                    if (sellsovpglMiningRate < (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100))) sellsovpglMiningRate = 0;
-
-                                    sellsovpglMiningRate = parseFloat(sellsovpglMiningRate).toFixed(4);
-
-
-
-
-                                    var buysovpglMultiplierStart = document.getElementById('buysovpglBancorDiv').textContent;
-
-                                    buysovpglMultiplierStart = format_eos_amount(buysovpglMultiplierStart)*1E4;
-
-                                    buysovpglMultiplier = Math.log10(((buysovpglMultiplierStart/ 1e4) / 200) / .175);
-                                    if (buysovpglMultiplier < 1) buysovpglMultiplier = 0;
-                                    
-
-                                    var buysovpglMiningRate = (svx_mining_supply / 20000) * (1 + (bonus_percentage / 100)) * buysovpglMultiplier;
-                                    buysovpglMiningRate = parseFloat(buysovpglMiningRate).toFixed(4);
 
 
 
@@ -1963,6 +2008,10 @@
 
                                     document.getElementById('buysovusdtMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovusdtMiningRate + "</span>  SVX</span>";
 
+                                    document.getElementById('sellsovsvxMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovsvxMiningRate + "</span>  SVX</span>";
+
+                                    document.getElementById('buysovsvxMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovsvxMiningRate + "</span>  SVX</span>";
+
                                     document.getElementById('sellsovyasMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovyasMiningRate + "</span>  SVX</span>";
 
                                     document.getElementById('buysovyasMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovyasMiningRate + "</span>  SVX</span>";
@@ -1983,9 +2032,7 @@
 
                                     document.getElementById('buysovpeosMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovpeosMiningRate + "</span>  SVX</span>";
 
-                                    document.getElementById('sellsovpglMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovpglMiningRate + "</span>  SVX</span>";
-
-                                    document.getElementById('buysovpglMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + buysovpglMiningRate + "</span>  SVX</span>";
+                                    
 
                                     document.getElementById('sellsovdiceMiningRateDiv').innerHTML = "<span class='bold' style='font-size:14px;'>Reward: <span style='color:#00bb00'>" + sellsovdiceMiningRate + "</span>  SVX</span>";
 
@@ -2657,6 +2704,107 @@
 
 
 
+                    function buySVXEOS() {
+
+                        var transfer_amount = document.getElementById('eos_transfer_amount1').value;
+                        alert("Exchange " + transfer_amount + " EOS for SVX");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " EOS";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'eosio.token',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                             
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'SVX',
+                                }
+
+                            }]
+                        }).then(result => {
+                            
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+
+                    } 
+
+                    function sellSVXEOS() {
+                        
+                        var transfer_amount = document.getElementById('svx_transfer_amount').value;
+                        alert("Exchange " + transfer_amount + " SVX for EOS");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " SVX";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'svxmintofeos',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                                //     data: {"from":scatter_account,"to":receiver_account,"quantity":betamount,"memo":memo}
+                                //      data: {"param": "createbet;;BIRD vs turtle;This is a description;Bird;bird;Turtle;turtle;43;123"}
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'EOS',
+                                }
+
+                            }]
+                        }).then(result => {
+                            // If Success
+
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+                            // Error details
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            //  nalert('<br><div class=\'checkmark_red\'></div>Error '+err.error.name+ '!<br><br>','white');
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+                    }
+
+
+
+
+
                     function buySOVYAS() {
 
                         var transfer_amount = document.getElementById('yas_transfer_amount').value;
@@ -3157,104 +3305,7 @@
 
 
 
-                    function buySOVPGL() {
-
-                        var transfer_amount = document.getElementById('pgl_transfer_amount').value;
-                        alert("Exchange " + transfer_amount + " PGL for SOV");
-                        transfer_amount = format_eos_amount(transfer_amount);
-                        transfer_amount = transfer_amount + " PGL";
-
-                        eosobject.transaction({
-                            actions: [{
-                                account: 'prospectorsg',
-                                //      name: 'admin2',
-                                name: 'transfer',
-                                authorization: [{
-                                    actor: scatter_account,
-                                    permission: "active"
-                                }],
-                             
-                                data: {
-                                    "from": scatter_account,
-                                    "to": 'sovdexrelays',
-                                    "quantity": transfer_amount,
-                                    "memo": 'SOV',
-                                }
-
-                            }]
-                        }).then(result => {
-                            
-                            console.log("Success!!!");
-
-                            alert('Success!');
-
-                            return;
-                        }).catch(error => {
-                            console.log("jsonerr: " + error);
-
-                            err = JSON.parse(error);
-                            console.log("Error Transaction " + err);
-
-                            alert('Error: ' + err.error.details[0].message);
-
-                            return;
-
-                        });
-
-
-                    }
-
-
-
-                    function sellSOVPGL() {
-                        
-                        var transfer_amount = document.getElementById('sov_transfer_amount5').value;
-                        alert("Exchange " + transfer_amount + " SOV for PGL");
-                        transfer_amount = format_eos_amount(transfer_amount);
-                        transfer_amount = transfer_amount + " SOV";
-
-                        eosobject.transaction({
-                            actions: [{
-                                account: 'sovmintofeos',
-                                //      name: 'admin2',
-                                name: 'transfer',
-                                authorization: [{
-                                    actor: scatter_account,
-                                    permission: "active"
-                                }],
-                                //     data: {"from":scatter_account,"to":receiver_account,"quantity":betamount,"memo":memo}
-                                //      data: {"param": "createbet;;BIRD vs turtle;This is a description;Bird;bird;Turtle;turtle;43;123"}
-                                data: {
-                                    "from": scatter_account,
-                                    "to": 'sovdexrelays',
-                                    "quantity": transfer_amount,
-                                    "memo": 'PGL',
-                                }
-
-                            }]
-                        }).then(result => {
-                            // If Success
-
-                            console.log("Success!!!");
-
-                            alert('Success!');
-
-                            return;
-                        }).catch(error => {
-                            console.log("jsonerr: " + error);
-                            // Error details
-
-                            err = JSON.parse(error);
-                            console.log("Error Transaction " + err);
-
-                            //  nalert('<br><div class=\'checkmark_red\'></div>Error '+err.error.name+ '!<br><br>','white');
-                            alert('Error: ' + err.error.details[0].message);
-
-                            return;
-
-                        });
-
-                    }
+                    
 
 
 
@@ -3661,6 +3712,107 @@
 
 
 
+                    function buySOVSVX() {
+
+                        var transfer_amount = document.getElementById('svx_transfer_amount1').value;
+                        alert("Exchange " + transfer_amount + " SVX for SOV");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " SVX";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'svxmintofeos',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                             
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'SOV',
+                                }
+
+                            }]
+                        }).then(result => {
+                            
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+
+                    }
+
+
+
+                    function sellSOVSVX() {
+                        
+                        var transfer_amount = document.getElementById('sov_transfer_amount77').value;
+                        alert("Exchange " + transfer_amount + " SOV for SVX");
+                        transfer_amount = format_eos_amount(transfer_amount);
+                        transfer_amount = transfer_amount + " SOV";
+
+                        eosobject.transaction({
+                            actions: [{
+                                account: 'sovmintofeos',
+                                //      name: 'admin2',
+                                name: 'transfer',
+                                authorization: [{
+                                    actor: scatter_account,
+                                    permission: "active"
+                                }],
+                                //     data: {"from":scatter_account,"to":receiver_account,"quantity":betamount,"memo":memo}
+                                //      data: {"param": "createbet;;BIRD vs turtle;This is a description;Bird;bird;Turtle;turtle;43;123"}
+                                data: {
+                                    "from": scatter_account,
+                                    "to": 'sovdexrelays',
+                                    "quantity": transfer_amount,
+                                    "memo": 'SVX',
+                                }
+
+                            }]
+                        }).then(result => {
+                            // If Success
+
+                            console.log("Success!!!");
+
+                            alert('Success!');
+
+                            return;
+                        }).catch(error => {
+                            console.log("jsonerr: " + error);
+                            // Error details
+
+                            err = JSON.parse(error);
+                            console.log("Error Transaction " + err);
+
+                            //  nalert('<br><div class=\'checkmark_red\'></div>Error '+err.error.name+ '!<br><br>','white');
+                            alert('Error: ' + err.error.details[0].message);
+
+                            return;
+
+                        });
+
+                    }
+
+
+
 
 
                 </script>
@@ -3674,8 +3826,8 @@
         <br>
             <nav>
                 <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
-                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-EOS" role="tab" aria-controls="nav-EOS" aria-selected="true">EOS</a>
-                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-USDT" role="tab" aria-controls="nav-USDT" aria-selected="false">USDT</a>
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-EOS" role="tab" aria-controls="nav-EOS" aria-selected="true">SOV|EOS</a>
+                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-USDT" role="tab" aria-controls="nav-USDT" aria-selected="false">SOV|USDT</a>
                 </div>
             </nav>
             <br>
@@ -3759,19 +3911,120 @@
     <br>
 
 
+
+
+
+
+
+
+       <div class="container border rounded bg-dark shadow">
+        <br>
+            <nav>
+                <div class="nav nav-pills nav-justified" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-SVXEOS" role="tab" aria-controls="nav-SVXEOS" aria-selected="true">SVX|EOS</a>
+                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-SVXSOV" role="tab" aria-controls="nav-SVXSOV" aria-selected="false">SVX|SOV</a>
+                </div>
+            </nav>
+            <br>
+
+            <div class="tab-content" id="nav-tabContent">
+
+                <div class="tab-pane fade show active" id="nav-SVXEOS" role="tabpanel" aria-labelledby="nav-SVXEOS-tab">
+
+            <h6 id='svxDiscount77' class="text-center text-warning">...</h6>
+            <h6 class="text-center text-white">SVX/EOS Trading Balance</h6>
+            <row class="d-flex justify-content-around">
+                <small id="balance1" class="col text-center text-light">...</small>
+                <small id= "SVXBALANCE" class="col text-light text-center">...</small>
+            </row>  
+
+            <div class="row row-cols-2">
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='eos_transfer_amount1'  value= '1' step=".01" oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-success btn-lg btn-block shadow" onclick='buySVXEOS()'>SendEOS<br>Buy SVX/EOS</button>
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="buysvxeosBancorDiv">...</small>
+                    <small class="text-center text-white">SVX before fees</small>
+                    
+                </div>
+
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='svx_transfer_amount' value='350' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSVXEOS()'>SendSVX<br>Sell SVX/EOS</button> 
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="sellsvxeosBancorDiv">...</small>
+                    <small class="text-center text-white">EOS before fees</small>
+                   
+                </div>
+            </div>
+            <br>
+
+        <div>
+            <p id="SVXEOSPRICE" class="d-flex justify-content-center text-light">...</p>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="nav-SVXSOV" role="tabpanel" aria-labelledby="nav-SVXSOV-tab">
+     <h6 id='svxDiscount76' class="text-center text-warning">...</h6>
+            <h6 class="text-center text-white">SOV/SVX Trading Balance</h6>
+            <row class="d-flex justify-content-around">
+                <small id="SVXBALANCE1" class="col text-center text-light">...</small>
+                <small id= "SOVSVXBALANCE" class="col text-light text-center">...</small>
+            </row> 
+
+            <div class="row row-cols-2">
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='svx_transfer_amount1' value= '350' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVSVX()'>SendSVX<br>Buy SOV/SVX</button>
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="buysovsvxBancorDiv">...</small>
+                    <small class="text-center text-white">SOV before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="buysovsvxMiningRateDiv">...</small>
+                </div>
+
+                <div class="col text-center">
+                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount77' value='350' oninput="this.value = Math.abs(this.value)">
+                    <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVSVX()'>SendSOV<br>Sell SOV/SVX</button> 
+                    <small class="text-center text-white">Receive</small>
+                    <small class="text-center text-warning" id="sellsovsvxBancorDiv">...</small>
+                    <small class="text-center text-white">SVX before fees</small>
+                    <br>
+                    <small class="text-center text-white" id="sellsovsvxMiningRateDiv">...</small>
+                </div>
+            </div>
+            <br>
+
+        <div>
+            <p id="SOVSVXPRICE" class="d-flex justify-content-center text-light">...</p>
+        </div>
+  </div>
+</div>
+</div>
+    <br>
+
+
+
+
+
+
+
+
+
+
 <div class="container border rounded bg-dark shadow">
     <br>
 <nav>
   <div class="nav nav-pills justify-content-center" id="nav-tab" role="tablist">
-    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-YAS" role="tab" aria-controls="nav-YAS" aria-selected="true">YAS</a>
-    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-DAPP" role="tab" aria-controls="nav-DAPP" aria-selected="false">DAPP</a>
-    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-CHEX" role="tab" aria-controls="nav-CHEX" aria-selected="false">CHEX</a>
-    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-TPT" role="tab" aria-controls="nav-TPT" aria-selected="false">TPT</a>
-    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-NDX" role="tab" aria-controls="nav-NDX" aria-selected="false">NDX</a>
-    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-PEOS" role="tab" aria-controls="nav-PEOS" aria-selected="false">PEOS</a>
-    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-PGL" role="tab" aria-controls="nav-PGL" aria-selected="false">PGL</a>
-    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-DICE" role="tab" aria-controls="nav-DICE" aria-selected="false">DICE</a>
-    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-POW" role="tab" aria-controls="nav-POW" aria-selected="false">POW</a>
+    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-YAS" role="tab" aria-controls="nav-YAS" aria-selected="true">SOV|YAS</a>
+    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-DAPP" role="tab" aria-controls="nav-DAPP" aria-selected="false">SOV|DAPP</a>
+    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-CHEX" role="tab" aria-controls="nav-CHEX" aria-selected="false">SOV|CHEX</a>
+    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-TPT" role="tab" aria-controls="nav-TPT" aria-selected="false">SOV|TPT</a>
+    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-NDX" role="tab" aria-controls="nav-NDX" aria-selected="false">SOV|NDX</a>
+    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-PEOS" role="tab" aria-controls="nav-PEOS" aria-selected="false">SOV|PEOS</a>
+    
+    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-DICE" role="tab" aria-controls="nav-DICE" aria-selected="false">SOV|DICE</a>
+    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-POW" role="tab" aria-controls="nav-POW" aria-selected="false">SOV|POW</a>
   </div>
 </nav>
 <br>
@@ -3994,41 +4247,7 @@
             <p id="SOVPEOSPRICE" class="d-flex justify-content-center text-light">...</p>
         </div>
   </div>
-  <div class="tab-pane fade" id="nav-PGL" role="tabpanel" aria-labelledby="nav-PGL-tab">
-    <h6 id='svxDiscount5' class="text-center text-warning">...</h6>
-            <h6 class="text-center text-white">SOV/PGL Trading Balance</h6>
-            <row class="d-flex justify-content-around">
-                <small id="PGLBALANCE" class="col text-center text-light">...</small>
-                <small id= "SOVPGLBALANCE" class="col text-light text-center">...</small>
-            </row>  
-
-            <div class="row row-cols-2">
-                <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='pgl_transfer_amount'  value= '50' oninput="this.value = Math.abs(this.value)">
-                    <button class="btn btn-success btn-lg btn-block shadow" onclick='buySOVPGL()'>SendPGL<br>Buy SOV/PGL</button>
-                    <small class="text-center text-white">Receive</small>
-                    <small class="text-center text-warning" id="buysovpglBancorDiv">...</small>
-                    <small class="text-center text-white">SOV before fees</small>
-                    <br>
-                    <small class="text-center text-white" id="buysovpglMiningRateDiv">...</small>
-                </div>
-
-                <div class="col text-center">
-                    <input class="text-center form-control mb-1" type='number' min="0" id='sov_transfer_amount5' value='350' oninput="this.value = Math.abs(this.value)">
-                    <button class="btn btn-danger btn-lg btn-block shadow" onclick='sellSOVPGL()'>SendSOV<br>Sell SOV/PGL</button> 
-                    <small class="text-center text-white">Receive</small>
-                    <small class="text-center text-warning" id="sellsovpglBancorDiv">...</small>
-                    <small class="text-center text-white">PGL before fees</small>
-                    <br>
-                    <small class="text-center text-white" id="sellsovpglMiningRateDiv">...</small>
-                </div>
-            </div>
-            <br>
-
-        <div>
-            <p id="SOVPGLPRICE" class="d-flex justify-content-center text-light">...</p>
-        </div>
-  </div>
+  
   <div class="tab-pane fade" id="nav-DICE" role="tabpanel" aria-labelledby="nav-DICE-tab">
     <h6 id='svxDiscount6' class="text-center text-warning">...</h6>
             <h6 class="text-center text-white">SOV/DICE Trading Balance</h6>
